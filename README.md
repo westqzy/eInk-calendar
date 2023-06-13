@@ -130,7 +130,9 @@ const String QWEATHER_API_KEY = "********************";
 - 连接电子墨水屏到微雪的ESP32开发板上，其实很简单，就一个软排线接口，插上口按下卡扣就好。**烧写程序时记得通过USB连接电脑**！
 
 - 通过VSCode中PlatformIO插件中的Open Project打开本地项目(`platformio.ini`所在文件夹)，初次打开项目可能会下载必要的库，可能会很慢或失败，多半和网络原因有关
+
     <img src="/images/s1.png" width="400">
+
     <img src="/images/s2.png" width="400">
 
 - 编译文件系统镜像并上传到驱动板
@@ -138,6 +140,7 @@ const String QWEATHER_API_KEY = "********************";
     <img src="/images/s3.png" width="400">
 
 - 编译项目并上传到驱动板
+- 
     <img src="/images/s4.png" width="400">
 
 ### 配网
@@ -145,9 +148,11 @@ const String QWEATHER_API_KEY = "********************";
 - 初次联网(初次烧录)或者更换网络环境需要进行配网操作，此处使用ESP-TOUCH APP(支持Android或IOS)并使用组播的方式进行配网。
 
 ESP32如果无法连接网络，会在墨水屏上显示：
+
   <img src="/images/ESPconfig.jpg" width="400">
 
 此时在手机端打开Esptouch APP，**选择 EspTouch**(不是 EspTouch V2)，并按如下图所示配置WIFI名称、WIFI密码，并**勾选组播选项**，即可让ESP32连接手机接入的无线网络之中：
+
     <img src="/images/ESPtouch.jpg" width="400">
 
 - 不同系统下的APKs：
