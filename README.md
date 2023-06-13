@@ -116,11 +116,11 @@ ESP32的闪存（Flash）可以被分区为多个区域，这些区域的大小�
 
 买齐配件等到货
 
-### VSCode和PlatformIO IDE的安装
+### 4.2. VSCode和PlatformIO IDE的安装
 
 不多赘述，网上教程很多，随便找一个即可，如[这个](https://blog.csdn.net/qq_40018676/article/details/128680677)。
 
-### clone这个库并烧写程序
+### 4.3. clone这个库并烧写程序
 
 - clone本库到本地，**记得修改和风天气API的Key**！具体在[config.h](src\config.h)里：
 ```cpp
@@ -145,7 +145,7 @@ const String QWEATHER_API_KEY = "********************";
  
     <img src="/images/s4.png" width="400">
 
-### 配网
+### 4.4. 配网
 
 - 初次联网(初次烧录)或者更换网络环境需要进行配网操作，此处使用ESP-TOUCH APP(支持Android或IOS)并使用组播的方式进行配网。
 
@@ -163,7 +163,7 @@ IOS系统下：[ESP-TOUCH for iOS](https://apps.apple.com/cn/app/espressif-espto
 
 Android系统下：[ESP-TOUCH for Android](https://github.com/EspressifApp/EsptouchForAndroid/releases/tag/v2.0.0/esptouch-v2.0.0.apk)
 
-### 安装
+### 4.5. 安装
 
 按照自己的喜好，把器件都安装进去即可！以下是我的方案。
 
