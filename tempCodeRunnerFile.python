@@ -1,0 +1,30 @@
+import requests
+
+# 设置你的 Todoist API 终端点和令牌
+url = "https://api.todoist.com/rest/v2/tasks?token=f32d42a9e9d1d930d2a7d04ade318b1336a700c3"
+url2 = "https://api.todoist.com/rest/v2/tasks?Authorization:Bearer20f32d42a9e9d1d930d2a7d04ade318b1336a700c3"
+token = "f32d42a9e9d1d930d2a7d04ade318b1336a700c3"
+url3 = "https://api.todoist.com/rest/v2/tasks"
+
+headers = {
+    'Authorization': 'Bearer f32d42a9e9d1d930d2a7d04ade318b1336a700c3',
+}
+
+# 设置请求头，包括授权头
+# headers = {
+#     "Authorization": f"Bearer {token}"
+# }
+
+# 发送 GET 请求
+# url = "https://www.baidu.com/"
+
+response = requests.get(url3, headers = headers);
+print(response.status_code)
+# 检查响应
+if response.status_code == 200:
+    # 请求成功
+    data = response.json()
+    print(data)
+else:
+    # 请求失败，打印错误信息
+    print(f"HTTP Error {response.status_code}: {response.text}")

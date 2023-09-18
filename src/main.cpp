@@ -650,6 +650,67 @@ void DrawMultiLineString(string content, uint16_t x, uint16_t y, uint16_t conten
   }
 }
 
+void ShowTodoist()
+{
+  WiFiClientSecure client;
+  client.setInsecure();
+  // String requestUrl = "https://api.todoist.com/rest/v2/tasks?token=" + TODOIST_ACCESS_TOKEN;
+  String requestUrl = "https://api.todoist.com/rest/v2/tasks";
+  const int responseLength = 8192; // 指定要获取的响应长度
+  HTTPClient http;
+  http.begin(requestUrl);//Specify the URL
+  http.addHeader("Authorization", "Bearer " + String(TODOIST_ACCESS_TOKEN));
+  int httpCode = http.GET();     
+  Serial.println("检测todoist模块");
+  Serial.println(requestUrl);
+  Serial.println(httpCode);
+  if (httpCode > 0) { //Check for the returning code
+    String payload = http.getString().substring(0, responseLength);;
+    //Serial.println(httpCode);
+    Serial.println(payload);
+    DynamicJsonDocument doc(responseLength);
+    DeserializationError error = deserializeJson(doc, payload);
+    if (error) {
+      Serial.print("deserializeJson() failed: ");
+      Serial.println(error.c_str());
+      return;
+    }
+    u8g2Fonts.setFont(u8g2_mfyuehei_18_gb2312);
+    String toDoInCenter = "--待办事项--";
+    int16_t toDoWidth = u8g2Fonts.getUTF8Width(toDoInCenter.c_str());
+    u8g2Fonts.drawUTF8((DISPLAY_WIDTH - toDoWidth) / 2, 400, toDoInCenter.c_str());
+    //u8g2Fonts.drawUTF8(80, 540, "**待办事项**");
+    int sizeY = 440;
+    int count_for = 0;
+    for (JsonObject item : doc.as<JsonArray>()) 
+    {
+      const char* content = item["content"]; 
+      const char* due_date = item["due"]["date"]; 
+      Serial.println(content);
+      u8g2Fonts.setFont(u8g2_mfyuehei_14_gb2312);
+      String headerTodoist = "->";
+      headerTodoist.concat(content);
+      headerTodoist.concat("   ");
+      if(DateTime.format(DateFormatter::DATE_ONLY).c_str() == string(due_date)){
+        headerTodoist.concat("今天");
+      }
+      else{
+        headerTodoist.concat(due_date);
+      }
+      char allTodoist[2048];
+      headerTodoist.toCharArray(allTodoist, 2048);
+      DrawMultiLineString(string(allTodoist), 80, sizeY, 300, 36);
+      sizeY = sizeY + 25;
+      count_for ++;
+      if (count_for == 5) {
+        break;
+      } // 定时跳出循环
+    }
+  }
+}
+
+
+
 void ShowWiFiSmartConfig()
 {
   //display.clearScreen(GxEPD_WHITE);
@@ -830,7 +891,8 @@ void ShowPage(PageContent pageContent)
       break;
     }
 
-    ShowToxicSoul();
+    // ShowToxicSoul();
+    ShowTodoist();
     ShowWeatherFoot();
 
   } while (display.nextPage());

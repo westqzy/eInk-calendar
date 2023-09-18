@@ -173,3 +173,13 @@ Android系统下：[ESP-TOUCH for Android](https://github.com/EspressifApp/Espto
     <img src="/images/z2.jpg" width="400" style="flex-grow: 1;">
     <img src="/images/z3.jpg" width="400" style="flex-grow: 1;">
 </div>
+
+## 5. 更新
+
+添加todoist模块
+
+相关api需要在config.h中设置
+
+最多显示4个todo事项
+
+<img src="/images/z4.jpg" width="400">
