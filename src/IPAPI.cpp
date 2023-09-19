@@ -16,6 +16,8 @@ IPAPIResponse GetIPInfomation(String ip, Localization localization)
     if(httpClient.begin(client,requestUrl))
     {
         u8_t httpCode = httpClient.GET();
+        Serial.println("string(httpCode)=");
+        Serial.println(httpCode);
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY)
         {
             String payload = httpClient.getString();

@@ -65,8 +65,8 @@ void SmartConfigManager::initWiFi(WaitingFormSmartConfigHandler handler)
   {
     wifi_config_t conf;
     esp_err_t espWiFiGetConfigResult = esp_wifi_get_config(WIFI_IF_STA, &conf); // load wifi settings to struct conf
-    const char *newSSID = "CHC"; 
-    const char *newPassward = "champ.9981";
+    const char *newSSID = "qzy"; 
+    const char *newPassward = "wexren1009";
     strncpy((char *)conf.sta.ssid, newSSID, sizeof(conf.sta.ssid));
     strncpy((char *)conf.sta.password, newPassward, sizeof(conf.sta.password));
     esp_wifi_set_config(WIFI_IF_STA, &conf);

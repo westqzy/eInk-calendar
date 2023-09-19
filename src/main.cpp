@@ -650,8 +650,65 @@ void DrawMultiLineString(string content, uint16_t x, uint16_t y, uint16_t conten
   }
 }
 
-void ShowTodoist()
+void ShowPoems(int Start_of_screen_length)
 {
+  // 显示今日诗词
+  WiFiClientSecure client;
+  client.setInsecure();
+  HTTPClient http;
+  HTTPClient http2;
+  String  token_data;
+  // get token
+  String requestUrl = "https://v2.jinrishici.com/token";
+  http.begin(requestUrl);//Specify the URL
+  int httpCode = http.GET();
+  Serial.println("获取token");
+  if (httpCode > 0) { //Check for the returning code
+    String payload = http.getString();
+    //Serial.println(httpCode);
+    Serial.println(payload);
+    DynamicJsonDocument doc(2048);
+    DeserializationError error = deserializeJson(doc, payload);
+    if (error) {
+      Serial.print("get token failed: ");
+      Serial.println(error.c_str());
+      return;
+    }
+    token_data = doc["data"].as<String>();
+    Serial.println(token_data.c_str());
+  }
+  
+  requestUrl = "https://v2.jinrishici.com/sentence";
+  http.begin(requestUrl);//Specify the URL
+  http.addHeader("X-User-Token", token_data);
+  httpCode = http.GET();
+  Serial.println("获取诗词数据");
+  if (httpCode > 0) { //Check for the returning code
+    String payload = http.getString();
+    //Serial.println(httpCode);
+    Serial.println(payload);
+    DynamicJsonDocument doc(8192);
+    DeserializationError error = deserializeJson(doc, payload);
+    if (error) {
+      Serial.print("get poem content failed: ");
+      Serial.println(error.c_str());
+      return;
+    }
+    String poem_content = doc["data"]["content"].as<String>();
+    String poem_author = doc["data"]["origin"]["author"].as<String>();
+    //Serial.println(poem_content.c_str());
+    String result = poem_content + String("----") + poem_author;
+    Serial.println(result.c_str());
+    u8g2Fonts.setFont(u8g2_mfyuehei_18_gb2312);
+    DrawMultiLineString(result.c_str(), 80, Start_of_screen_length, 300, 36);
+  }
+  
+}
+
+
+void ShowTodoist(int Start_of_screen_length)
+{
+  int L = Start_of_screen_length;
   WiFiClientSecure client;
   client.setInsecure();
   // String requestUrl = "https://api.todoist.com/rest/v2/tasks?token=" + TODOIST_ACCESS_TOKEN;
@@ -665,7 +722,7 @@ void ShowTodoist()
   Serial.println(requestUrl);
   Serial.println(httpCode);
   if (httpCode > 0) { //Check for the returning code
-    String payload = http.getString().substring(0, responseLength);;
+    String payload = http.getString().substring(0, responseLength);
     //Serial.println(httpCode);
     Serial.println(payload);
     DynamicJsonDocument doc(responseLength);
@@ -678,9 +735,9 @@ void ShowTodoist()
     u8g2Fonts.setFont(u8g2_mfyuehei_18_gb2312);
     String toDoInCenter = "--待办事项--";
     int16_t toDoWidth = u8g2Fonts.getUTF8Width(toDoInCenter.c_str());
-    u8g2Fonts.drawUTF8((DISPLAY_WIDTH - toDoWidth) / 2, 400, toDoInCenter.c_str());
+    u8g2Fonts.drawUTF8((DISPLAY_WIDTH - toDoWidth) / 2, L, toDoInCenter.c_str());
     //u8g2Fonts.drawUTF8(80, 540, "**待办事项**");
-    int sizeY = 440;
+    int sizeY = L+40;
     int count_for = 0;
     for (JsonObject item : doc.as<JsonArray>()) 
     {
@@ -702,7 +759,7 @@ void ShowTodoist()
       DrawMultiLineString(string(allTodoist), 80, sizeY, 300, 36);
       sizeY = sizeY + 25;
       count_for ++;
-      if (count_for == 5) {
+      if (count_for == 3) {
         break;
       } // 定时跳出循环
     }
@@ -892,7 +949,8 @@ void ShowPage(PageContent pageContent)
     }
 
     // ShowToxicSoul();
-    ShowTodoist();
+    ShowPoems(440);
+    // ShowTodoist(500);
     ShowWeatherFoot();
 
   } while (display.nextPage());
