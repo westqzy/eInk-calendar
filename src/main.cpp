@@ -999,9 +999,9 @@ void ShowPage(PageContent pageContent)
     }
 
     // ShowToxicSoul();
-    //ShowPoems(440);
-    ShowTodayInHistory(410);
-    // ShowTodoist(500);
+    ShowPoems(440);
+    // ShowTodayInHistory(410);
+    //ShowTodoist(500);
     ShowWeatherFoot();
 
   } while (display.nextPage());

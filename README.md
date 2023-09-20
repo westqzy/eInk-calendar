@@ -188,6 +188,8 @@ Android系统下：[ESP-TOUCH for Android](https://github.com/EspressifApp/Espto
 
 API调用使用[今日诗词](https://www.jinrishici.com/)：每次返回一句诗词，根据时间、地点、天气、事件智能推荐
 
+<img src="/images/z5.jpg" width="400">
+
 ### 添加历史上今天
 
 按照时间线递减显示三条历史上的今天发生的事情！
