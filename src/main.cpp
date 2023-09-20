@@ -652,8 +652,8 @@ uint16_t DrawMultiLineString(string content, uint16_t x, uint16_t y, uint16_t co
 }
 
 void ShowTodayInHistory(int Start_of_screen_length){
-  WiFiClientSecure client;
-  client.setInsecure();
+  // WiFiClientSecure client;
+  // client.setInsecure();
   HTTPClient http;
   HTTPClient http2;
   String  token_data;
@@ -700,8 +700,8 @@ void ShowTodayInHistory(int Start_of_screen_length){
 void ShowPoems(int Start_of_screen_length)
 {
   // 显示今日诗词
-  WiFiClientSecure client;
-  client.setInsecure();
+  // WiFiClientSecure client;
+  // client.setInsecure();
   HTTPClient http;
   HTTPClient http2;
   String  token_data;
@@ -759,8 +759,8 @@ void ShowPoems(int Start_of_screen_length)
 void ShowTodoist(int Start_of_screen_length)
 {
   int L = Start_of_screen_length;
-  WiFiClientSecure client;
-  client.setInsecure();
+  // WiFiClientSecure client;
+  // client.setInsecure();
   // String requestUrl = "https://api.todoist.com/rest/v2/tasks?token=" + TODOIST_ACCESS_TOKEN;
   String requestUrl = "https://api.todoist.com/rest/v2/tasks";
   const int responseLength = 8192; // 指定要获取的响应长度
