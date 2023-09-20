@@ -180,10 +180,16 @@ Android系统下：[ESP-TOUCH for Android](https://github.com/EspressifApp/Espto
 
 相关api需要在config.h中设置
 
-最多显示4个todo事项
+最多显示3个todo事项
 
 <img src="/images/z4.jpg" width="400">
 
 ### 添加古诗词模块
 
 API调用使用[今日诗词](https://www.jinrishici.com/)：每次返回一句诗词，根据时间、地点、天气、事件智能推荐
+
+### 添加历史上今天
+
+按照时间线递减显示三条历史上的今天发生的事情！
+
+<img src="/images/z6.jpg" width="400">

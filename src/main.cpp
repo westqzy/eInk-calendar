@@ -613,7 +613,7 @@ void drawBitmapFromSpiffs_Buffered(const char *filename, int16_t x, int16_t y, b
   }
 }
 
-void DrawMultiLineString(string content, uint16_t x, uint16_t y, uint16_t contentAreaWidthWithMargin, uint16_t lineHeight)
+uint16_t DrawMultiLineString(string content, uint16_t x, uint16_t y, uint16_t contentAreaWidthWithMargin, uint16_t lineHeight)
 {
   string ch;
   vector<string> contentArray;
@@ -648,7 +648,54 @@ void DrawMultiLineString(string content, uint16_t x, uint16_t y, uint16_t conten
       outputContent = "";
     }
   }
+  return y;
 }
+
+void ShowTodayInHistory(int Start_of_screen_length){
+  WiFiClientSecure client;
+  client.setInsecure();
+  HTTPClient http;
+  HTTPClient http2;
+  String  token_data;
+  String requestUrl = "https://api.oick.cn/lishi/api.php";
+  http.begin(requestUrl);//Specify the URL
+  int httpCode = http.GET();
+  if (httpCode > 0) { //Check for the returning code
+    String payload = http.getString();
+    //Serial.println(httpCode);
+    Serial.println(payload);
+    DynamicJsonDocument doc(8192);
+    DeserializationError error = deserializeJson(doc, payload);
+    if (error) {
+      Serial.print("get url(TodayInHistory) failed: ");
+      Serial.println(error.c_str());
+      return;
+    }
+    Serial.println("历史上今天");
+    vector<string> HistoryArray;
+    vector<string> DateArray;
+    for (JsonObject item : doc["result"].as<JsonArray>()) 
+    {
+      string titlestr = item["title"].as<string>();
+      string datestr = item["date"].as<string>();
+      HistoryArray.push_back(titlestr);
+      DateArray.push_back(datestr.substr(0, 4));
+    }
+    string outputContent;
+    u8g2Fonts.setFont(u8g2_mfyuehei_18_gb2312);
+    String toDoInCenter = "--历史上的今天--";
+    int16_t toDoWidth = u8g2Fonts.getUTF8Width(toDoInCenter.c_str());
+    u8g2Fonts.drawUTF8((DISPLAY_WIDTH - toDoWidth) / 2, Start_of_screen_length, toDoInCenter.c_str());
+    Start_of_screen_length += 40;
+    u8g2Fonts.setFont(u8g2_mfyuehei_14_gb2312);
+    for (int i = HistoryArray.size() - 1; i >= max(0, int(HistoryArray.size()) - 3); i--) {
+        outputContent =DateArray[i] + ":" + HistoryArray[i];
+        Serial.println(outputContent.c_str());
+        Start_of_screen_length = DrawMultiLineString(outputContent.c_str(), 80, Start_of_screen_length, DISPLAY_WIDTH-160, 24);
+    }
+  }
+}
+
 
 void ShowPoems(int Start_of_screen_length)
 {
@@ -697,10 +744,13 @@ void ShowPoems(int Start_of_screen_length)
     String poem_content = doc["data"]["content"].as<String>();
     String poem_author = doc["data"]["origin"]["author"].as<String>();
     //Serial.println(poem_content.c_str());
-    String result = poem_content + String("----") + poem_author;
-    Serial.println(result.c_str());
+    String poem_author_print = String("----") + poem_author;
+    Serial.println(poem_author_print.c_str());
     u8g2Fonts.setFont(u8g2_mfyuehei_18_gb2312);
-    DrawMultiLineString(result.c_str(), 80, Start_of_screen_length, 300, 36);
+    Start_of_screen_length = DrawMultiLineString(poem_content.c_str(), 80, Start_of_screen_length, 300, 36);
+    int16_t wTemp = u8g2Fonts.getUTF8Width(poem_author_print.c_str());
+    DrawMultiLineString(poem_author_print.c_str(), DISPLAY_WIDTH-80-wTemp, Start_of_screen_length, 300, 36);
+
   }
   
 }
@@ -949,7 +999,8 @@ void ShowPage(PageContent pageContent)
     }
 
     // ShowToxicSoul();
-    ShowPoems(440);
+    //ShowPoems(440);
+    ShowTodayInHistory(410);
     // ShowTodoist(500);
     ShowWeatherFoot();
 
