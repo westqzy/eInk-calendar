@@ -651,6 +651,56 @@ uint16_t DrawMultiLineString(string content, uint16_t x, uint16_t y, uint16_t co
   return y;
 }
 
+void ShowHitokoto(int Start_of_screen_length, String Type = ""){
+  // Type参数可选范围
+// a	动画
+// b	漫画
+// c	游戏
+// d	文学
+// e	原创
+// f	来自网络
+// g	其他
+// h	影视
+// i	诗词
+// j	网易云
+// k	哲学
+// l	抖机灵
+// 例如 ShowOneSentence(400, "a");表示获得一句和动画相关的一言
+// 不送如该参数则随机生成
+  // WiFiClientSecure client;
+  // client.setInsecure();
+  HTTPClient http;
+  HTTPClient http2;
+  String  token_data;
+  String requestUrl = "https://international.v1.hitokoto.cn/?c=";
+  requestUrl += Type;
+  http.begin(requestUrl);//Specify the URL
+  int httpCode = http.GET();
+  if (httpCode > 0) { //Check for the returning code
+    String payload = http.getString();
+    //Serial.println(httpCode);
+    Serial.println(payload);
+    DynamicJsonDocument doc(2048);
+    DeserializationError error = deserializeJson(doc, payload);
+    if (error) {
+      Serial.print("get url(TodayInHistory) failed: ");
+      Serial.println(error.c_str());
+      return;
+    }
+    Serial.println("一言");
+    String hitokoto = doc["hitokoto"].as<String>();
+    String from = doc["from"].as<String>();
+    
+    String from_print = String("----") + from;
+    Serial.println(hitokoto.c_str());
+    u8g2Fonts.setFont(u8g2_mfyuehei_18_gb2312);
+    Start_of_screen_length = DrawMultiLineString(hitokoto.c_str(), 80, Start_of_screen_length, 300, 36);
+    int16_t wTemp = u8g2Fonts.getUTF8Width(from_print.c_str());
+    DrawMultiLineString(from_print.c_str(), DISPLAY_WIDTH-80-wTemp, Start_of_screen_length, 300, 36);
+  }
+}
+
+
 void ShowTodayInHistory(int Start_of_screen_length){
   // WiFiClientSecure client;
   // client.setInsecure();
@@ -999,7 +1049,8 @@ void ShowPage(PageContent pageContent)
     }
 
     // ShowToxicSoul();
-    ShowPoems(440);
+    //ShowPoems(440);
+    ShowHitokoto(440);
     // ShowTodayInHistory(410);
     //ShowTodoist(500);
     ShowWeatherFoot();

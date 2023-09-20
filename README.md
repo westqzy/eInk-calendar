@@ -178,7 +178,9 @@ Android系统下：[ESP-TOUCH for Android](https://github.com/EspressifApp/Espto
 
 ### 添加todoist模块
 
-相关api需要在config.h中设置
+API调用使用[todoist](https://todoist.com/)：添加每日代办并进行显示
+
+相关ACCESS TOKEN需要在config.h中设置，申请网址如下：[todoist developer](https://developer.todoist.com/appconsole.html)
 
 最多显示3个todo事项
 
@@ -195,3 +197,9 @@ API调用使用[今日诗词](https://www.jinrishici.com/)：每次返回一句�
 按照时间线递减显示三条历史上的今天发生的事情！
 
 <img src="/images/z6.jpg" width="400">
+
+### 添加一言接口
+
+API调用使用[一言接口](https://developer.hitokoto.cn/)：所谓一言（ヒトコト），即一句话。这句话可以是传达了感动，可以是博人一笑，可以是发人深思。
+
+<img src="/images/z7.jpg" width="400">
