@@ -22,7 +22,7 @@ IPAPIResponse GetIPInfomation(String ip, Localization localization)
         {
             String payload = httpClient.getString();
             Serial.println(payload);
-
+            
             StaticJsonDocument<1024> doc;
             deserializeJson(doc, payload);
 

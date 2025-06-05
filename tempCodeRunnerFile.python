@@ -1,29 +1,14 @@
-import requests
+# 打开输入文件和输出文件
+input_filename = "D:/20220728/RX_FLOW_TEST/singtone_384k_band20M_1fn.dat"
+output_filename = "D:/20220728/RX_FLOW_TEST/output.txt"
 
-# 设置你的 Todoist API 终端点和令牌
-url = "http://ip-api.com/json/?lang=zh-CN&fields=66846719"
-url2 = "https://v2.jinrishici.com/sentence"
-token = "f32d42a9e9d1d930d2a7d04ade318b1336a700c3"
-url3 = "https://api.todoist.com/rest/v2/tasks"
+with open(input_filename, "r") as input_file, open(output_filename, "w") as output_file:
+    # 逐行处理输入文件内容
+    for line in input_file:
+        # 去掉(UINT32)并移除末尾的逗号
+        modified_line = line.replace("(UINT32)", "")
+        modified_line = modified_line.replace(",", "")
+        # 将处理后的行写入输出文件
+        output_file.write(modified_line)
 
-
-
-# 设置请求头，包括授权头
-# headers = {
-#     "Authorization": f"Bearer {token}"
-# }
-
-# 发送 GET 请求
-# url = "https://www.baidu.com/"
-
-response = requests.get(url);
-
-print(response.text)
-# 检查响应
-# if response.status_code == 200:
-#     # 请求成功
-#     data = response.json()
-#     # print(data)
-# else:
-#     # 请求失败，打印错误信息
-#     print(f"HTTP Error {response.status_code}: {response.text}")
+print("处理完成，已生成新文件：", output_filename)

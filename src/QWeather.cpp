@@ -74,14 +74,35 @@ vector<GeoInfo> QWeather::GetGeoInfoList(String location, String adm, String ran
         u8_t httpCode = httpClient.GET();
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY)
         {
-            String payload = httpClient.getString();
-            Serial.println(payload);
-            DynamicJsonDocument doc(8192);
-            deserializeJson(doc, payload);
+            Serial.println("11212121212");
+
+            // String payload = httpClient.getString();
+            // Serial.println(payload);
+            // DynamicJsonDocument doc(8192);
+            // deserializeJson(doc, payload);
+
+                //String payload = httpClient.getString();
+                WiFiClient  * stream = httpClient.getStreamPtr();
+                size_t size = stream->available(); // 还剩下多少数据没有读完？
+                uint8_t inbuff[size]; // 准备一个数组来装流数据，有多少装多少
+                stream->readBytes(inbuff, size); // 将http流数据写入inbuff中
+                uint8_t *outbuf=NULL; //解压后的输出流
+                uint32_t outsize=0; // 解压后多大？在调用解压方法后会被赋值。
+                // 调用解压函数
+                int rr=ArduinoUZlib::decompress(inbuff, size, outbuf,outsize);
+                // 输出解密后的数据到控制台。
+                Serial.println("aaaaaaaaaaaaaaaaaaaaaaaaa");
+                String payload(outbuf, outsize);
+                Serial.println(payload);
+                DynamicJsonDocument doc(1024);
+                deserializeJson(doc, payload);    
+
 
             JsonArray locationArray = doc["location"];
             for (JsonVariant v : locationArray)
             {
+
+
                 JsonObject loc = v.as<JsonObject>();
                 GeoInfo gi;
                 gi.name = loc["name"].as<String>();

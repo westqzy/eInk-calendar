@@ -405,6 +405,8 @@ void setupDateTime()
   }
 }
 
+
+
 void drawBitmapFromSpiffs_Buffered(const char *filename, int16_t x, int16_t y, bool with_color, bool partial_update, bool overwrite)
 {
   fs::File file;
@@ -440,6 +442,10 @@ void drawBitmapFromSpiffs_Buffered(const char *filename, int16_t x, int16_t y, b
     uint16_t planes = read16(file);
     uint16_t depth = read16(file); // bits per pixel
     uint32_t format = read32(file);
+    Serial.print("planes: ");
+    Serial.println(planes);
+    Serial.print("format: ");
+    Serial.println(format);
     if ((planes == 1) && ((format == 0) || (format == 3))) // uncompressed is handled, 565 also
     {
       Serial.print("File size: ");
@@ -611,6 +617,24 @@ void drawBitmapFromSpiffs_Buffered(const char *filename, int16_t x, int16_t y, b
   {
     Serial.println("bitmap format not handled.");
   }
+}
+
+
+void drawWuSaQi(){
+    
+    drawBitmapFromSpiffs_Buffered("miaomiao.bmp", 50, DISPLAY_HEIGHT-48-50, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao2.bmp", 100, DISPLAY_HEIGHT-48-50, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao3.bmp", 150, DISPLAY_HEIGHT-48-50, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao5.bmp", 200, DISPLAY_HEIGHT-48-50, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao6.bmp", 250, DISPLAY_HEIGHT-48-50, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao7.bmp", 300, DISPLAY_HEIGHT-48-50, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao8.bmp", 350, DISPLAY_HEIGHT-48-50, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao10.bmp", 400, DISPLAY_HEIGHT-48-50, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao4.bmp",225, 40, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao9.bmp", 275, 40, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao11.bmp", 325, 40, false, true, false);
+
+
 }
 
 uint16_t DrawMultiLineString(string content, uint16_t x, uint16_t y, uint16_t contentAreaWidthWithMargin, uint16_t lineHeight)
@@ -884,7 +908,7 @@ void ShowWiFiSmartConfig()
     // 替换原先的配置方式，不再使用微信二维码配置，改用ESPTouch组播的形式
     DrawMultiLineString("请使用 ESPTouch 配置无线网络，ESPTouch 可在应用商店下载，配置选项如上。", 90, tipsY, 300, 30);
   } while (display.nextPage());
-  drawBitmapFromSpiffs_Buffered("SetStep.bmp", x, y-50, false, true, false);
+  // drawBitmapFromSpiffs_Buffered("SetStep.bmp", x, y-50, false, true, false);
 }
 
 enum PageContent : u8_t
@@ -946,6 +970,7 @@ void ShowWeatherFoot()
   else{
     u8g2Fonts.drawUTF8(88, DISPLAY_HEIGHT - 24, foot.c_str());
   }
+  
 }
 
 void ShowWeatherContent()
@@ -1024,6 +1049,8 @@ void ShowPage(PageContent pageContent)
   String iconFileBig = "64/";
   iconFileBig.concat(cw.icon);
   iconFileBig.concat(".bmp");
+
+ 
   /**
    * @brief 先写文字
    * 
@@ -1035,6 +1062,7 @@ void ShowPage(PageContent pageContent)
      * @brief 头部都用一样的吧
      * 
      */
+    
     ShowPageHeader();
 
     switch (pageContent)
@@ -1048,13 +1076,13 @@ void ShowPage(PageContent pageContent)
       break;
     }
 
-    // ShowToxicSoul();
+    ShowToxicSoul();
     //ShowPoems(440);
-    ShowHitokoto(440);
+    // ShowHitokoto(440);
     // ShowTodayInHistory(410);
     //ShowTodoist(500);
     ShowWeatherFoot();
-
+    
   } while (display.nextPage());
 
   /**
@@ -1065,12 +1093,13 @@ void ShowPage(PageContent pageContent)
   {
   case PageContent::CALENDAR:
     if (caq.category.length() >= 12){
-      drawBitmapFromSpiffs_Buffered(iconFileSmall.c_str(), 30, DISPLAY_HEIGHT - 48, false, true, false);
+      drawBitmapFromSpiffs_Buffered(iconFileSmall.c_str(), 30, DISPLAY_HEIGHT - 48, false, true, false); 
     }
     else{
       drawBitmapFromSpiffs_Buffered(iconFileSmall.c_str(), 48, DISPLAY_HEIGHT - 48, false, true, false);
     }
-
+    drawWuSaQi();
+    
     break;
   case PageContent::WEATHER:
     if (caq.category.length() >= 12){
@@ -1080,10 +1109,14 @@ void ShowPage(PageContent pageContent)
       drawBitmapFromSpiffs_Buffered(iconFileSmall.c_str(), 48, DISPLAY_HEIGHT - 48, false, true, false);
     }
     drawBitmapFromSpiffs_Buffered(iconFileBig.c_str(), 88, 140, false, true, false);
+    drawWuSaQi();
     break;
   }
+  
 }
-
+String dateInCenter_test;
+String year_begin = "1970-01-01";
+int setupDateTime_time = 0;
 void setup()
 {
 
@@ -1132,9 +1165,17 @@ void setup()
 
   gi = qwAPI.GetGeoInfo(ipAPIResponse.city, ipAPIResponse.regionName);
   Serial.printf("从和风天气中取到匹配城市: %s\n", gi.name.c_str());
-
-  setupDateTime();
-
+  Serial.printf("YEAR_test: %s\n", DateTime.format(DateFormatter::DATE_ONLY).c_str());
+  while (DateTime.format(DateFormatter::DATE_ONLY) == year_begin){
+      setupDateTime();
+      setupDateTime_time ++;
+      if (setupDateTime_time == 5){
+          Serial.printf("setupDateTime_time:%d\n", setupDateTime_time);
+          break;
+      }
+      Serial.printf("YEAR_test after setupDateTime: %s\n", DateTime.format(DateFormatter::DATE_ONLY).c_str());
+  }
+  //setupDateTime();
   ++LASTPAGE;
   if (LASTPAGE > PageContent::WEATHER)
     LASTPAGE = PageContent::CALENDAR;

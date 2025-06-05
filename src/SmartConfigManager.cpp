@@ -2,6 +2,7 @@
 #include "esp_system.h"
 #include <esp_wifi.h>
 #include "WiFi.h"
+#include "config.h"
 #include <string.h>
 #include <Arduino.h>
 
@@ -65,8 +66,9 @@ void SmartConfigManager::initWiFi(WaitingFormSmartConfigHandler handler)
   {
     wifi_config_t conf;
     esp_err_t espWiFiGetConfigResult = esp_wifi_get_config(WIFI_IF_STA, &conf); // load wifi settings to struct conf
-    const char *newSSID = "qzy"; 
-    const char *newPassward = "123456321";
+    const char *newSSID = SSID_1.c_str(); 
+    const char *newPassward = Passward_1.c_str();
+
     strncpy((char *)conf.sta.ssid, newSSID, sizeof(conf.sta.ssid));
     strncpy((char *)conf.sta.password, newPassward, sizeof(conf.sta.password));
     esp_wifi_set_config(WIFI_IF_STA, &conf);
@@ -76,11 +78,13 @@ void SmartConfigManager::initWiFi(WaitingFormSmartConfigHandler handler)
       scPassword = reinterpret_cast<const char *>(conf.sta.password);
       WiFi_SSID = String(scSSID);
       WiFi_Password = String(scPassword);
-      //WiFi_SSID = "CHC"
-      //WiFi_Password = "champ.9981"
+      // 打印wifi密码账户
+      Serial.printf("WiFi_SSID: '%s'\n", WiFi_SSID);
+      Serial.printf("WiFi_Password: '%s'\n", WiFi_Password);
+
       if (WiFi_SSID != "" && WiFi_Password != "")
       {
-        Serial.println("Try connect WiFi with saved credentials.");
+        Serial.println("Try connect WiFi with saved credentials.\n");
         WiFi.reconnect();
         if (WaitingForConnectWiFiWithTimeout())
         {
@@ -89,7 +93,32 @@ void SmartConfigManager::initWiFi(WaitingFormSmartConfigHandler handler)
         }
         else
         {
-          Serial.println("Connect WiFi timeout, will re-connect with SmartConfig QR Code.");
+          Serial.println("First WiFi connection failed\n");
+          // 尝试第二次连接wifi
+          newSSID = SSID_2.c_str(); 
+          newPassward = Passward_2.c_str();
+
+          strncpy((char *)conf.sta.ssid, newSSID, sizeof(conf.sta.ssid));
+          strncpy((char *)conf.sta.password, newPassward, sizeof(conf.sta.password));
+          esp_wifi_set_config(WIFI_IF_STA, &conf);
+          // 打印wifi 2配置
+          scSSID = reinterpret_cast<const char *>(conf.sta.ssid);
+          scPassword = reinterpret_cast<const char *>(conf.sta.password);
+          WiFi_SSID = String(scSSID);
+          WiFi_Password = String(scPassword);
+          // 打印wifi密码账户
+          Serial.printf("WiFi_SSID: '%s'\n", WiFi_SSID);
+          Serial.printf("WiFi_Password: '%s'\n", WiFi_Password);
+
+          WiFi.reconnect();
+          if (WaitingForConnectWiFiWithTimeout())
+          {
+            Serial.printf("Connect WiFi successfully with IP: '%s'\n", WiFi.localIP().toString().c_str());
+            return;
+          }
+          else{
+              Serial.println("Second WiFi connection failed\n");
+          }
         }
         
       }
