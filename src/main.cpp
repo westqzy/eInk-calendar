@@ -637,6 +637,25 @@ void drawWuSaQi(){
 
 }
 
+void drawWuSaQi_H(){
+    int det = 55;
+    int initpos = 28;
+    int H_posdet = 76;
+    drawBitmapFromSpiffs_Buffered("miaomiao.bmp", initpos, DISPLAY_HEIGHT-H_posdet, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao2.bmp", initpos+det, DISPLAY_HEIGHT-H_posdet, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao3.bmp", initpos+det*2, DISPLAY_HEIGHT-H_posdet, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao5.bmp", initpos+det*3, DISPLAY_HEIGHT-H_posdet, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao6.bmp", initpos+det*4, DISPLAY_HEIGHT-H_posdet, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao7.bmp", initpos+det*5, DISPLAY_HEIGHT-H_posdet, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao8.bmp", initpos+det*6, DISPLAY_HEIGHT-H_posdet, false, true, false);
+
+    drawBitmapFromSpiffs_Buffered("miaomiao10.bmp", initpos+det*7, DISPLAY_HEIGHT-H_posdet, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao4.bmp", initpos+det*8, DISPLAY_HEIGHT-H_posdet, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao9.bmp", initpos+det*9, DISPLAY_HEIGHT-H_posdet, false, true, false);
+    drawBitmapFromSpiffs_Buffered("miaomiao11.bmp", initpos+det*10, DISPLAY_HEIGHT-H_posdet, false, true, false);
+
+}
+
 uint16_t DrawMultiLineString(string content, uint16_t x, uint16_t y, uint16_t contentAreaWidthWithMargin, uint16_t lineHeight)
 {
   string ch;
@@ -928,6 +947,21 @@ void ShowPageHeader()
   u8g2Fonts.setFont(u8g2_mfyuehei_14_gb2312);
   u8g2Fonts.drawUTF8(48, 64 + 24, WEEKDAY_EN[DateTime.getParts().getWeekDay()]);
 }
+// 横过来的页眉
+void ShowPageHeader_H()
+{
+  u8g2Fonts.setFont(u8g2_mfyuanhei_16_gb2312);
+  u8g2Fonts.drawUTF8(48, 48, DateTime.format(DateFormatter::DATE_ONLY).c_str());
+  
+  int16_t cityNameWidth = u8g2Fonts.getUTF8Width(gi.name.c_str());
+  u8g2Fonts.drawUTF8((DISPLAY_WIDTH - cityNameWidth - 48), 48, gi.name.c_str());
+
+  u8g2Fonts.setFont(u8g2_mfyuehei_14_gb2312);
+  u8g2Fonts.drawUTF8(48, 48 + 24, WEEKDAY_EN[DateTime.getParts().getWeekDay()]);
+
+  int16_t NameWidth = u8g2Fonts.getUTF8Width("By:七梓月");
+  u8g2Fonts.drawUTF8((DISPLAY_WIDTH - NameWidth - 48), 48 + 24, "By:七梓月");
+}
 void ShowCurrentDate()
 {
   String dateInCenter = String(DateTime.getParts().getMonthDay());
@@ -1114,6 +1148,145 @@ void ShowPage(PageContent pageContent)
   }
   
 }
+std::vector<FutureWeatherIconEntry> futureWeatherIcons;
+
+void ShowFutureWeatherTextAndRecordIcons(const std::vector<DailyWeather>& dws)
+{
+  futureWeatherIcons.clear(); // 清空上次的记录
+
+  const int baseX = 48;
+  const int yStart = 130;
+  const int rowHeight = 40;
+  const int iconOffsetY = 24;
+
+  u8g2Fonts.setFont(u8g2_mfyuehei_14_gb2312);
+
+  // 获取当前星期作为参考
+  int todayWeekday = DateTime.getParts().getWeekDay();
+  const char *WEEKDAY_CN[] = {"周日", "周一", "周二", "周三", "周四", "周五", "周六"};
+
+  for (size_t i = 0; i < std::min(dws.size(), (size_t)7); ++i)
+  {
+    const DailyWeather& dw = dws[i];
+    int y = yStart + i * rowHeight;
+
+    // 1. 日期 + 星期（固定宽度段1）
+    String mmdd = dw.fxDate.substring(5);  // 截取 MM-DD
+    int weekdayIndex = (todayWeekday + i) % 7;
+    String weekdayStr = WEEKDAY_CN[weekdayIndex];
+    String datePart = mmdd + "  " + weekdayStr;
+
+    int x = baseX;
+    u8g2Fonts.drawUTF8(x, y, datePart.c_str());
+    x += 170;  // 固定日期段宽度
+
+    // 2. 白天图标
+    futureWeatherIcons.push_back({dw.Day.icon, "", x, y - iconOffsetY});
+    x += 40;
+
+    // 3. 白天天气描述
+    
+    u8g2Fonts.drawUTF8(x, y, dw.Day.text.c_str());
+    x += 65;
+
+    // 4. ~ 波浪符号
+    u8g2Fonts.drawUTF8(x, y, "~");
+    x += 20;
+
+    // 5. 夜晚图标
+    futureWeatherIcons.push_back({"", dw.Night.icon, x, y - iconOffsetY});
+    x += 40;
+
+    // 6. 夜晚天气描述
+    u8g2Fonts.drawUTF8(x, y, dw.Night.text.c_str());
+    x += 115;
+
+    // 7. 温度段（居右展示）
+    String tempStr = dw.tempMin + "°C~" + dw.tempMax + "°C";
+    u8g2Fonts.drawUTF8(x, y, tempStr.c_str());
+  }
+}
+
+
+void DrawFutureWeatherIcons()
+{
+  for (const auto& entry : futureWeatherIcons)
+  {
+    if (entry.dayIcon.length() > 0) {
+      String dayIconPath = "32/" + entry.dayIcon + ".bmp";
+      drawBitmapFromSpiffs_Buffered(dayIconPath.c_str(), entry.x, entry.y, false, true, false);
+    }
+    if (entry.nightIcon.length() > 0) {
+      String nightIconPath = "32/" + entry.nightIcon + ".bmp";
+      drawBitmapFromSpiffs_Buffered(nightIconPath.c_str(), entry.x, entry.y, false, true, false);
+    }
+  }
+}
+
+
+
+
+
+
+void ShowPage2()
+{
+  Serial.println("-------  SETUP page 2  -----------");
+  display.setFullWindow();
+  display.fillScreen(GxEPD_WHITE);
+  display.setRotation(4);
+  DISPLAY_WIDTH = display.width();
+  DISPLAY_HEIGHT = display.height();
+  Serial.println("DISPLAY_WIDTH");
+  Serial.println(DISPLAY_WIDTH);
+  Serial.println("DISPLAY_HEIGHT");
+  Serial.println(DISPLAY_HEIGHT);
+  u8g2Fonts.setFontMode(1);                  // 使用透明模式
+  u8g2Fonts.setFontDirection(0);             // 从左到右
+  u8g2Fonts.setForegroundColor(GxEPD_BLACK); // 前景色：黑色
+  u8g2Fonts.setBackgroundColor(GxEPD_WHITE); // 背景色：白色
+  
+
+  //  获取天气
+  dws = qwAPI.GetDailyWeather(gi.id);
+  
+  display.firstPage();
+  do
+  {
+    // 顶部统一页眉
+    ShowPageHeader_H();
+    // 显示未来几天天气
+    display.drawLine(32, 87, DISPLAY_WIDTH - 32, 87, GxEPD_BLACK);
+    display.drawLine(32, 88, DISPLAY_WIDTH - 32, 88, GxEPD_BLACK);
+
+    display.drawLine(32, 91, DISPLAY_WIDTH - 32, 91, GxEPD_BLACK);
+    display.drawLine(32, 92, DISPLAY_WIDTH - 32, 92, GxEPD_BLACK);
+    display.drawLine(32, 93, DISPLAY_WIDTH - 32, 93, GxEPD_BLACK);
+    display.drawLine(32, 94, DISPLAY_WIDTH - 32, 94, GxEPD_BLACK);
+
+
+    
+
+    ShowFutureWeatherTextAndRecordIcons(dws);  // 显示天气文字 + 记录图标
+
+
+    display.drawLine(32, DISPLAY_HEIGHT-80, DISPLAY_WIDTH - 32, DISPLAY_HEIGHT-80, GxEPD_BLACK);
+    display.drawLine(32, DISPLAY_HEIGHT-81, DISPLAY_WIDTH - 32, DISPLAY_HEIGHT-81, GxEPD_BLACK);
+
+    display.drawLine(32, DISPLAY_HEIGHT-84, DISPLAY_WIDTH - 32, DISPLAY_HEIGHT-84, GxEPD_BLACK);
+    display.drawLine(32, DISPLAY_HEIGHT-85, DISPLAY_WIDTH - 32, DISPLAY_HEIGHT-85, GxEPD_BLACK);
+    display.drawLine(32, DISPLAY_HEIGHT-86, DISPLAY_WIDTH - 32, DISPLAY_HEIGHT-86, GxEPD_BLACK);
+    display.drawLine(32, DISPLAY_HEIGHT-87, DISPLAY_WIDTH - 32, DISPLAY_HEIGHT-87, GxEPD_BLACK);
+    
+    // ShowToxicSoul_H();
+    // TODO: 其他显示内容可以后续补充
+  } while (display.nextPage());
+
+  DrawFutureWeatherIcons();
+
+  drawWuSaQi_H();
+
+}
+
 String dateInCenter_test;
 String year_begin = "1970-01-01";
 int setupDateTime_time = 0;
@@ -1180,7 +1353,8 @@ void setup()
   if (LASTPAGE > PageContent::WEATHER)
     LASTPAGE = PageContent::CALENDAR;
 
-  ShowPage((PageContent)LASTPAGE);
+  // ShowPage((PageContent)LASTPAGE);
+  ShowPage2();
   display.hibernate();
 
   Serial.println("-------  SETUP FINISHED  -----------");

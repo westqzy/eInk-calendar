@@ -476,6 +476,23 @@ struct CurrentAirQuality: AirQualityData
     vector<AirStationData> Stations;
 };
 
+
+
+struct FutureWeatherIconEntry {
+    /**
+     * @brief 用于缓存图标坐标和文件名
+     * 
+     */
+    String dayIcon;
+    String nightIcon;
+    int x;
+    int y;
+};
+
+
+
+
+
 /**
  * @brief 和风天气API
  * 
