@@ -1,3 +1,40 @@
+## 0. 更新计划
+
+
+### 2025.06.05更新
+
+1. 狗日的和风天气好像给获取地理信息的API获取的信息也进行压缩了，因此修改相关解压缩代码
+2. 添加了乌萨奇大王小图标显示
+<img src="/images/z8.jpg" width="400">
+
+### 添加todoist模块
+
+API调用使用[todoist](https://todoist.com/)：添加每日代办并进行显示
+
+相关ACCESS TOKEN需要在config.h中设置，申请网址如下：[todoist developer](https://developer.todoist.com/appconsole.html)
+
+最多显示3个todo事项
+
+<img src="/images/z4.jpg" width="400">
+
+### 添加古诗词模块
+
+API调用使用[今日诗词](https://www.jinrishici.com/)：每次返回一句诗词，根据时间、地点、天气、事件智能推荐
+
+<img src="/images/z5.jpg" width="400">
+
+### 添加历史上今天
+
+按照时间线递减显示三条历史上的今天发生的事情！
+
+<img src="/images/z6.jpg" width="400">
+
+### 添加一言接口
+
+API调用使用[一言接口](https://developer.hitokoto.cn/)：所谓一言（ヒトコト），即一句话。这句话可以是传达了感动，可以是博人一笑，可以是发人深思。
+
+<img src="/images/z7.jpg" width="400">
+
 ## 1. 说明
 
 这个项目是基于 breakstring's [eInkCalendarOfToxicSoul](https://github.com/breakstring/eInkCalendarOfToxicSoul) 进行的二次开发。我从这个原始项目中获得了很多启示，然而，由于原项目已经有些年份，我注意到一些功能不能正常运行。因此我在原项目基础上进行了一些改进和扩展，以确保所有的功能都能正常工作。我非常感谢原作者 breakstring 的辛勤努力和开放分享。他的贡献为我提供了一个很好的参考，让我有机会学习和改进。
@@ -174,38 +211,3 @@ Android系统下：[ESP-TOUCH for Android](https://github.com/EspressifApp/Espto
     <img src="/images/z3.jpg" width="400" style="flex-grow: 1;">
 </div>
 
-## 5. 更新计划
-
-### 添加todoist模块
-
-API调用使用[todoist](https://todoist.com/)：添加每日代办并进行显示
-
-相关ACCESS TOKEN需要在config.h中设置，申请网址如下：[todoist developer](https://developer.todoist.com/appconsole.html)
-
-最多显示3个todo事项
-
-<img src="/images/z4.jpg" width="400">
-
-### 添加古诗词模块
-
-API调用使用[今日诗词](https://www.jinrishici.com/)：每次返回一句诗词，根据时间、地点、天气、事件智能推荐
-
-<img src="/images/z5.jpg" width="400">
-
-### 添加历史上今天
-
-按照时间线递减显示三条历史上的今天发生的事情！
-
-<img src="/images/z6.jpg" width="400">
-
-### 添加一言接口
-
-API调用使用[一言接口](https://developer.hitokoto.cn/)：所谓一言（ヒトコト），即一句话。这句话可以是传达了感动，可以是博人一笑，可以是发人深思。
-
-<img src="/images/z7.jpg" width="400">
-
-### 2025.06.05更新
-
-1. 狗日的和风天气好像给获取地理信息的API获取的信息也进行压缩了，因此修改相关解压缩代码
-2. 添加了乌萨奇大王小图标显示
-![alt text](\images\6dcb5c74d8fd82f9e4c84f9c3e44ef4.jpg)
